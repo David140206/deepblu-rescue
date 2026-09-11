@@ -1,0 +1,11 @@
+package com.deepblue.deepblue.repository;
+import com.deepblue.deepblue.domain.*;
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.time.LocalDate;
+import java.util.*;
+public interface RescueCaseRepository extends JpaRepository<RescueCase, Long> {
+    Optional<RescueCase> findByCaseCode(String caseCode);
+    List<RescueCase> findByStatusOrderByRescueDateAsc(RescueStatus status);
+    List<RescueCase> findByRescueCenterCode(String centerCode);
+    List<RescueCase> findByRescueDateAfterOrderByRescueDateDesc(LocalDate rescueDate);
+}
