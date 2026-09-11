@@ -191,4 +191,66 @@ class PersistenceIntegrationTest {
         }
         return specialist;
     }
+
+    // Parte XIII
+
+    @Test
+    void integratorScenarioPersistenceAndQueriesWork() {
+
+        // Paso 65
+        Expertise marineReptiles = expertiseRepository.findByNameIgnoreCase("Marine Reptiles").orElseThrow();
+        Expertise trauma = expertiseRepository.findByNameIgnoreCase("Trauma").orElseThrow();
+        Expertise rehabilitation = expertiseRepository.findByNameIgnoreCase("Rehabilitation").orElseThrow();
+
+        RescueCenter center = new RescueCenter("DB-CAR", "DeepBlue Caribbean", "Santa Marta");
+        rescueCenterRepository.saveAndFlush(center);
+
+        RescueCase rescueCase = new RescueCase("RES-2026-100", LocalDate.of(2026, 8, 18), "Bahia Concha", RescueStatus.IN_REHABILITATION);
+
+        Animal animal = new Animal("AN-2026-100", "Green Sea Turtle", "Chelonia mydas", AnimalSex.FEMALE);
+
+        MedicalRecord medicalRecord = new MedicalRecord(new BigDecimal("27.80"), "STABLE", "Injury caused by fishing net", "Possible plastic ingestion");
+        animal.assignMedicalRecord(medicalRecord);
+        rescueCase.assignAnimal(animal);
+        center.addCase(rescueCase);
+        rescueCenterRepository.saveAndFlush(center);
+
+        Specialist specialist = new Specialist("SPEC-001", "Elena", "Vargas", "elena@deepblue.org", true);
+        specialist.addExpertise(marineReptiles);
+        specialist.addExpertise(trauma);
+        specialist.addExpertise(rehabilitation);
+        specialistRepository.saveAndFlush(specialist);
+
+        Treatment treatment1 = new Treatment(animal, specialist, LocalDateTime.of(2026, 8, 18, 10, 0), TreatmentType.WOUND_CARE, "Cleaning of left front flipper");
+        treatmentRepository.saveAndFlush(treatment1);
+
+        Treatment treatment2 = new Treatment(animal, specialist, LocalDateTime.of(2026, 8, 19, 10, 0), TreatmentType.HYDRATION, "Subcutaneous fluid therapy");
+        treatmentRepository.saveAndFlush(treatment2);
+
+
+        // Paso 66
+        RescueCase foundCase = rescueCaseRepository.findByCaseCode("RES-2026-100").orElseThrow();
+        assertThat(foundCase.getCaseCode()).isEqualTo("RES-2026-100");
+
+        List<RescueCase> rehabilitationCases = rescueCaseRepository.findByStatusOrderByRescueDateAsc(RescueStatus.IN_REHABILITATION);
+        assertThat(rehabilitationCases).extracting(RescueCase::getCaseCode).contains("RES-2026-100");
+
+        List<Animal> centerAnimals = animalRepository.findByRescueCaseRescueCenterCode("DB-CAR");
+        assertThat(centerAnimals).extracting(Animal::getAnimalCode).contains("AN-2026-100");
+
+        List<Animal> turtles = animalRepository.findByCommonNameContainingIgnoreCase("turtle");
+        assertThat(turtles).extracting(Animal::getAnimalCode).contains("AN-2026-100");
+
+        List<Specialist> traumaSpecialists = specialistRepository.findActiveByExpertise("Trauma");
+        assertThat(traumaSpecialists).extracting(Specialist::getProfessionalCode).contains("SPEC-001");
+
+        List<Treatment> animalTreatments = treatmentRepository.findByAnimalIdOrderByPerformedAtAsc(animal.getId());
+        assertThat(animalTreatments).hasSize(2);
+
+        List<Treatment> rehabilitationTreatments = treatmentRepository.findBySpecialistExpertise("Rehabilitation");
+        assertThat(rehabilitationTreatments).hasSize(2);
+
+        List<Treatment> treatmentsBetween = treatmentRepository.findPerformedBetween(LocalDateTime.of(2026, 8, 17, 0, 0), LocalDateTime.of(2026, 8, 20, 0, 0));
+        assertThat(treatmentsBetween).hasSize(2);
+    }
 }
