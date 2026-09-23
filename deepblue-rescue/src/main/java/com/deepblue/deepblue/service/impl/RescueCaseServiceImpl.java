@@ -1,8 +1,10 @@
 package com.deepblue.deepblue.service.impl;
 
+import com.deepblue.deepblue.domain.RescueCase;
 import com.deepblue.deepblue.domain.RescueStatus;
 import com.deepblue.deepblue.dto.request.ChangeRescueStatusRequest;
 import com.deepblue.deepblue.dto.response.RescueCaseResponse;
+import com.deepblue.deepblue.exception.BusinessRuleException;
 import com.deepblue.deepblue.exception.ResourceNotFoundException;
 import com.deepblue.deepblue.mapper.RescueCaseMapper;
 import com.deepblue.deepblue.repository.RescueCaseRepository;
@@ -55,32 +57,33 @@ public class RescueCaseServiceImpl
     @Override
     @Transactional
     public RescueCaseResponse changeStatus(String caseCode, ChangeRescueStatusRequest request) {
-        // TODO 1
-        // Buscar el RescueCase.
 
-        // TODO 2
-        // Si no existe:
-        // ResourceNotFoundException.
+        RescueCase rescueCase = repository
+                .findByCaseCode(caseCode)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException(
+                                "Rescue case not found: "
+                                        + caseCode
+                        )
+                );
 
-        // TODO 3
-        // Obtener currentStatus.
+        RescueStatus currentStatus = rescueCase.getStatus();
+        RescueStatus nextStatus = request.status();
 
-        // TODO 4
-        // Validar transición.
+        if (!isValidTransition(
+                currentStatus,
+                nextStatus)) {
+            throw new BusinessRuleException(
+                    "Invalid status transition from "
+                            + currentStatus
+                            + " to "
+                            + nextStatus
+            );
+        }
 
-        // TODO 5
-        // Si no es válida:
-        // BusinessRuleException.
-
-        // TODO 6
-        // Cambiar status.
-
-        // TODO 7
-        // Guardar.
-
-        // TODO 8
-        // Transformar a Response.
-        return null;
+        rescueCase.setStatus(nextStatus);
+        repository.saveAndFlush(rescueCase);
+        return mapper.toResponse(rescueCase);
     }
 
     private boolean isValidTransition(

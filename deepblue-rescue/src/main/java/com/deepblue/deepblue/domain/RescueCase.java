@@ -42,6 +42,7 @@ public class RescueCase {
     public LocalDate getRescueDate() { return rescueDate; }
     public String getRescueLocation() { return rescueLocation; }
     public RescueStatus getStatus() { return status; }
+    public void setStatus(RescueStatus status) {this.status = status;}
     public RescueCenter getRescueCenter() { return rescueCenter; }
     public Animal getAnimal() { return animal; }
 }
