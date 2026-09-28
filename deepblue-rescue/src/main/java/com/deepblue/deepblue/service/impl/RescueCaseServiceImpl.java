@@ -86,9 +86,7 @@ public class RescueCaseServiceImpl
         return mapper.toResponse(rescueCase);
     }
 
-    private boolean isValidTransition(
-            RescueStatus current,
-            RescueStatus next) {
+    private boolean isValidTransition(RescueStatus current, RescueStatus next) {
 
         return switch (current) {
 
