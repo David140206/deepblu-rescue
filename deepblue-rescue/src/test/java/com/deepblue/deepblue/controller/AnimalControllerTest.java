@@ -5,7 +5,8 @@ import com.deepblue.deepblue.service.AnimalService;
 import com.deepblue.deepblue.service.TreatmentService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -67,5 +68,36 @@ class AnimalControllerTest {
                 .andExpect(jsonPath("$.eligible").value(true));
 
         verify(animalService).canReceiveTreatment("AN-001");
+    }
+    @Test
+    void shouldReturn404WhenAnimalNotFound() throws Exception {
+        // Configurar el mock para que lance la excepción cuando busquen un animal inexistente
+        when(animalService.findByCode("AN-999"))
+                .thenThrow(new com.deepblue.deepblue.exception.ResourceNotFoundException("Animal not found: AN-999"));
+
+        mockMvc.perform(get("/api/animals/{animalCode}", "AN-999"))
+                .andExpect(status().isNotFound()) // Valida código 404
+                .andExpect(jsonPath("$.timestamp").exists())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.error").value("Not Found"))
+                .andExpect(jsonPath("$.message").value("Animal not found: AN-999"))
+                .andExpect(jsonPath("$.details").isMap());
+
+        verify(animalService).findByCode("AN-999");
+    }
+    // 18. Error inesperado -> 500 Internal Server Error
+    @Test
+    void shouldReturn500WhenUnexpectedErrorOccurs() throws Exception {
+        when(animalService.findByCode("AN-001"))
+                .thenThrow(new RuntimeException("Unexpected database error"));
+
+        mockMvc.perform(get("/api/animals/{animalCode}", "AN-001"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.status").value(500))
+                .andExpect(jsonPath("$.error").value("Internal Server Error"))
+                .andExpect(jsonPath("$.message").exists())
+                .andExpect(jsonPath("$.details").isMap());
+
+        verify(animalService).findByCode("AN-001");
     }
 }

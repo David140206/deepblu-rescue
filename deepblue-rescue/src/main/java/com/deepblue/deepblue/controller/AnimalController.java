@@ -2,6 +2,7 @@ package com.deepblue.deepblue.controller;
 
 import com.deepblue.deepblue.dto.response.AnimalResponse;
 import com.deepblue.deepblue.dto.response.TreatmentEligibilityResponse;
+import com.deepblue.deepblue.dto.response.TreatmentResponse;
 import com.deepblue.deepblue.service.AnimalService;
 import com.deepblue.deepblue.service.TreatmentService;
 import org.springframework.http.ResponseEntity;
@@ -52,6 +53,13 @@ public class AnimalController {
                         animalCode,
                         eligible
                 )
+        );
+    }
+    @GetMapping("/{animalCode}/treatments")
+    public ResponseEntity<List<TreatmentResponse>> findTreatments(
+            @PathVariable String animalCode) {
+        return ResponseEntity.ok(
+                treatmentService.findByAnimalCode(animalCode)
         );
     }
 
