@@ -1,6 +1,6 @@
 package com.deepblue.deepblue.exception;
 
-public class BusinessRuleException
+public class    BusinessRuleException
         extends RuntimeException {
 
     public BusinessRuleException(
