@@ -1,4 +1,4 @@
-package com.deepblue.deepblue;
+package com.deepblue.deepblue.repository;
 
 import com.deepblue.deepblue.domain.*;
 import com.deepblue.deepblue.repository.*;
