@@ -34,12 +34,12 @@ public class TreatmentController {
                 .body(response);
     }
 
-    @GetMapping("/{animalCode}/treatments")
-    public ResponseEntity<List<TreatmentResponse>>
-    findTreatments(
-            @PathVariable String animalCode) {
-        return ResponseEntity.ok(
-                service.findByAnimalCode(animalCode)
-        );
-    }
+//    @GetMapping("/{animalCode}/treatments")
+//    public ResponseEntity<List<TreatmentResponse>>
+//    findTreatments(
+//            @PathVariable String animalCode) {
+//        return ResponseEntity.ok(
+//                service.findByAnimalCode(animalCode)
+//        );
+//    }
 }
