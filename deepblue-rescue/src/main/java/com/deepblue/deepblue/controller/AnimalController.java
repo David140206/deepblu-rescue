@@ -55,12 +55,11 @@ public class AnimalController {
                 )
         );
     }
-    @GetMapping("/{animalCode}/treatments")
-    public ResponseEntity<List<TreatmentResponse>> findTreatments(
-            @PathVariable String animalCode) {
-        return ResponseEntity.ok(
-                treatmentService.findByAnimalCode(animalCode)
-        );
+//    @GetMapping("/{animalCode}/treatments")
+//    public ResponseEntity<List<TreatmentResponse>> findTreatments(
+//            @PathVariable String animalCode) {
+//        return ResponseEntity.ok(
+//                treatmentService.findByAnimalCode(animalCode)
+//        );
     }
 
-}
