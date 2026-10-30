@@ -1,5 +1,6 @@
 package com.deepblue.deepblue.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -11,10 +12,12 @@ public class Treatment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "animal_id", nullable = false)
     private Animal animal;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "specialist_id", nullable = false)
     private Specialist specialist;

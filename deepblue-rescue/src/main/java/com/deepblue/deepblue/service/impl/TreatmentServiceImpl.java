@@ -40,6 +40,7 @@ public class TreatmentServiceImpl
     }
 
     @Override
+    @Transactional
     public TreatmentResponse register(CreateTreatmentRequest request) {
 
         Animal animal = animalRepository
