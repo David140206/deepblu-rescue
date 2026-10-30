@@ -30,7 +30,7 @@ public class AnimalServiceImpl  implements AnimalService {
                 .map(mapper::toResponse)
                 .orElseThrow(
                         ()-> new ResourceNotFoundException(
-                                "Animal not found" + animalCode)
+                                "Animal not found: " + animalCode)
                 );
     }
 
